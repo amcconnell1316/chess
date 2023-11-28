@@ -6,7 +6,9 @@ describe Board do
     subject(:board) { described_class.new }
     context 'when move is a command' do
       it 'only calls execute_command' do
-        allow
+        allow(board).to receive(:valid_command?).and_return(true)
+        expect(board).to receive(:execute_command)
+        board.play_move
       end
     end
   end

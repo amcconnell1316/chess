@@ -17,9 +17,9 @@ class Game
   def take_turn
     @board.change_player
     @board.print_board
-    puts "Player #{board.current_player_name}'s turn: "  
+    puts "Player #{@board.current_player_name}'s turn: "  
     move = player_input
-    @board.play_turn(move)     
+    @board.play_move(move)     
   end
 
   def player_input
@@ -33,3 +33,7 @@ class Game
     move
   end
 end
+
+puts "\u2654".encode('utf-8')
+Game.new.play
+
