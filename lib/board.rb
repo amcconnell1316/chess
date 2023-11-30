@@ -10,6 +10,8 @@ require_relative 'rook.rb'
 
 # This is a class for a chess board
 class Board
+  attr_reader :winner_name
+
   def initialize(skip_setup = false)
     @spots = Array.new(8) { Array.new(8, nil) }
     @white_pieces = []
@@ -26,9 +28,7 @@ class Board
 
     #break move into from square and to square
     move_arr = move.split(' ')
-    #remove piece from that square
-    moving_piece = piece_on_square(move_arr[0])
-    remove_piece(move_arr[0])
+
     #check opponent piece in new square
     piece_to_capture = piece_on_square(move_arr[1])
     #capture opponent piece
@@ -37,15 +37,16 @@ class Board
       remove_piece(move_arr[1])
     end
     #move piece to new square
-    move_piece(move_arr[1], moving_piece)
+    move_piece(move_arr[0], move_arr[1])
   end
 
   def valid_move?(move)
     return true if valid_command?(move)
     move_arr = move.split(' ')
     return false if move_arr[0].nil? || move_arr[1].nil?
-    return false if !valid_move_from?(move_arr[0])
-    valid_move_to?(move_arr)
+    return false unless valid_move_from?(move_arr[0])
+    return false unless valid_move_to?(move_arr)
+    !possible_move_check?(@current_player == 'w' ? 'b' : 'w', piece_on_square(move_arr[0]), move_arr[1])
   end
 
   def valid_command?(string)
@@ -100,32 +101,55 @@ class Board
   end
 
   def game_over?
-    !winner.nil? || draw?
+    winner? || draw?
   end
 
-  def winner
+  def winner?
     #check for check
     check_mate = false
     if check?
-      #todo actually check all player's pieces for moves that break check
-      king_moves = king_in_check.possible_moves
-      check_mate = king_moves.all? { | square | check?(square) }
+      puts "Check!"
+      checked_pieces = @current_player == 'b' ? @white_pieces : @black_pieces
+      check_mate = checked_pieces.all? do | piece |
+        possible_moves = piece.possible_moves
+        possible_moves.all? do | square |
+          possible_move_check?(@current_player, piece, square)
+        end
+      end
     end
     #check each of king's possible moves for check
-    check_mate ? current_player_name : nil
+    @winner_name = check_mate ? current_player_name : nil
+    check_mate
   end
 
-  def check?(king_square = nil)
+  def possible_move_check?(checking_player, piece, square)
+    @captured_piece = piece_on_square(square)
+    @old_square = piece.current_square
+    @new_square = square 
+    ret_val = piece.king? ? check?(checking_player, square) : check?(checking_player)
+    @old_square = nil
+    @new_square = nil
+    @captured_piece = nil
+    ret_val
+  end
+
+  def check?(checking_player = @current_player, king_square = nil)
+
+    king_in_check = checking_player == 'w' ? @black_king : @white_king
     king_square = king_in_check.current_square if king_square.nil?
-    checking_pieces = @current_player == 'w' ? @white_pieces : @black_pieces
-    checking_pieces.any? { | piece | piece.legal_move?(king_square) && !piece.king? }
+
+    checking_pieces = checking_player == 'w' ? @white_pieces : @black_pieces
+    checking_pieces.any? do | piece | 
+      next if piece == @captured_piece
+      piece.legal_move?(king_square)
+    end
   end
 
   def draw?
     return true if @draw
     return true if only_kings?
     next_move_pieces = @current_player == 'w' ? @black_pieces : @white_pieces
-    !next_move_pieces.any? { | piece | piece.possible_moves.length > 0 }
+    next_move_pieces.all? { | piece | piece.possible_moves.empty? }
   end
 
   def only_kings?
@@ -151,6 +175,10 @@ class Board
   end
 
   def piece_on_square(square)
+    #handle pretending a piece has been moved to check for checkmate
+    return nil if square == @old_square
+    return @spots[row(@old_square)][col(@old_square)] if square == @new_square
+
     @spots[row(square)][col(square)]
   end
 
@@ -165,10 +193,12 @@ class Board
     case piece
       when 'king'
         piece = King.new(player, square, self)
+        @white_king = piece if player == 'w'
+        @black_king = piece if player == 'b'
       when 'rook'
         piece = Rook.new(player, square, self)
     end
-    pieces_array = player == 'w' ? @white_pieces : @black_pieces
+    pieces_array =  player == 'w' ? @white_pieces : @black_pieces
     pieces_array << piece
     @spots[row(square)][col(square)] = piece
     piece
@@ -185,27 +215,24 @@ class Board
 
     if piece.player == 'w'
       index = @white_pieces.find_index(piece)
-      @white_pieces.slice(index)
+      @white_pieces.slice!(index)
     else
       index = @black_pieces.find_index(piece)
-      @black_pieces.slice(index)
+      @black_pieces.slice!(index)
     end
 
     @spots[row(square)][col(square)] = nil
   end
 
-  def move_piece(square, piece)
-    @spots[row(square)][col(square)] = piece
-    piece.move(square)
+  def move_piece(old_square, new_square)
+    piece = @spots[row(old_square)][col(old_square)] 
+    @spots[row(old_square)][col(old_square)] = nil
+    @spots[row(new_square)][col(new_square)] = piece
+    piece.move(new_square)
   end
 
   def display_spot(piece)
     piece.nil? ? ' ' : piece.display_chr
-  end
-
-
-  def king_in_check
-    @current_player == 'w' ? @black_king : @white_king
   end
 
   def setup_board

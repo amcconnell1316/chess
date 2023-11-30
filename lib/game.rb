@@ -10,7 +10,7 @@ class Game
   def play
     puts 'Welcome to chess!'
     take_turn until @board.game_over?
-    winner = @board.winner
+    winner = @board.winner_name
     puts winner.nil? ? "It's a tie!" : "Congratulations player #{winner}! You win!"
   end
 
@@ -34,6 +34,5 @@ class Game
   end
 end
 
-puts "\u2654".encode('utf-8')
 Game.new.play
 
