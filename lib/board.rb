@@ -116,6 +116,8 @@ class Board
         @black_king = piece if player == 'b'
       when 'rook'
         piece = Rook.new(player, square, self)
+      when 'bishop'
+        piece = Bishop.new(player, square, self)
     end
     pieces_array =  player == 'w' ? @white_pieces : @black_pieces
     pieces_array << piece
