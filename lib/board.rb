@@ -2,7 +2,7 @@
 
 require_relative 'piece.rb'
 require_relative 'king.rb'
-# require_relative 'queen.rb'
+require_relative 'queen.rb'
 require_relative 'rook.rb'
 require_relative 'knight.rb'
 require_relative 'bishop.rb'
@@ -120,6 +120,8 @@ class Board
         piece = Bishop.new(player, square, self)
       when 'knight'
         piece = Knight.new(player, square, self)
+      when 'queen'
+        piece = Queen.new(player, square, self)
     end
     pieces_array =  player == 'w' ? @white_pieces : @black_pieces
     pieces_array << piece
@@ -261,8 +263,8 @@ class Board
     @spots[0][2] = @white_pieces.last
     @white_pieces << Bishop.new('w', 'f1', self)
     @spots[0][5] = @white_pieces.last
-    # @white_pieces << Queen.new('w', 'd1', self)
-    # @spots[0][3] = @white_pieces.last
+    @white_pieces << Queen.new('w', 'd1', self)
+    @spots[0][3] = @white_pieces.last
     @white_pieces << King.new('w', 'e1', self)
     @spots[0][4] = @white_pieces.last
     @white_king = @white_pieces.last
@@ -283,8 +285,8 @@ class Board
     @spots[7][2] = @black_pieces.last
     @black_pieces << Bishop.new('b', 'f8', self)
     @spots[7][5] = @black_pieces.last
-    # @black_pieces << Queen.new('b', 'd8', self)
-    # @spots[7][3] = @black_pieces.last
+    @black_pieces << Queen.new('b', 'd8', self)
+    @spots[7][3] = @black_pieces.last
     @black_pieces << King.new('b', 'e8', self)
     @spots[7][4] = @black_pieces.last
     @black_king = @black_pieces.last
