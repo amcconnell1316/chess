@@ -2,13 +2,8 @@ require_relative 'board'
 require_relative 'piece'
 
 class King < Piece
-  attr_reader :player, :name, :current_square
-
   def initialize(player, square, board)
-    @player = player
-    @current_square = square
-    @name = 'king'
-    @board = board
+    super(player, square, board, 'king')
     @MOVES = [[1, -1], [1, 0], [1, 1], [0, 1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
   end
 

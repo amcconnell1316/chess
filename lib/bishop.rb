@@ -61,9 +61,8 @@ class Bishop < Piece
 
   private  
   def possible_move(row, col)
-      return nil if !@board.on_board?(row, col)
       move_square = @board.to_square(row, col)
-      return nil if blocked?(move_square)  || @board.same_player_on_square(move_square, @player)
+      return nil if !@board.on_board?(move_square) || blocked?(move_square)  || @board.same_player_on_square(move_square, @player)
       move_square      
   end
 

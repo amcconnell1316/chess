@@ -6,7 +6,7 @@ require_relative 'queen.rb'
 require_relative 'rook.rb'
 require_relative 'knight.rb'
 require_relative 'bishop.rb'
-# require_relative 'pawn.rb'
+require_relative 'pawn.rb'
 
 # This is a class for a chess board
 class Board
@@ -89,7 +89,9 @@ class Board
     (col.to_i + 97).chr + (row.to_i + 1).to_s
   end
 
-  def on_board?(row, col)
+  def on_board?(square)
+    row = row(square)
+    col = col(square)
     row >= 0 && row < 8  && col >= 0 && col < 8
   end
 
@@ -107,6 +109,12 @@ class Board
     piece_on_square.player == player
   end
 
+  def other_player_on_square(square, player)
+    piece_on_square = piece_on_square(square)
+    return false if piece_on_square.nil?
+    piece_on_square.player != player
+  end
+
   def add_piece(piece, player, square)
     new_piece = nil
     case piece
@@ -122,6 +130,8 @@ class Board
         piece = Knight.new(player, square, self)
       when 'queen'
         piece = Queen.new(player, square, self)
+      when 'pawn'
+        piece = Pawn.new(player, square, self)
     end
     pieces_array =  player == 'w' ? @white_pieces : @black_pieces
     pieces_array << piece
@@ -268,10 +278,10 @@ class Board
     @white_pieces << King.new('w', 'e1', self)
     @spots[0][4] = @white_pieces.last
     @white_king = @white_pieces.last
-    # 'abcdefgh'.each do | letter |
-    #   @white_pieces << Pawn.new('w', letter + 2, self)
-    #   @spots[0][col(letter)] = @white_pieces.last
-    # end
+    ['a','b','c','d','e','f','g','h'].each do | letter |
+      @white_pieces << Pawn.new('w', letter + '2', self)
+      @spots[1][col(letter)] = @white_pieces.last
+    end
 
     @black_pieces << Rook.new('b', 'a8', self)
     @spots[7][0] = @black_pieces.last
@@ -290,10 +300,10 @@ class Board
     @black_pieces << King.new('b', 'e8', self)
     @spots[7][4] = @black_pieces.last
     @black_king = @black_pieces.last
-    # 'abcdefgh'.each do | letter |
-    #   @black_pieces << Pawn.new('b', letter + 8, self)
-    #   @spots[7][col(letter)] = @black_pieces.last
-    # end
+    ['a','b','c','d','e','f','g','h'].each do | letter |
+      @black_pieces << Pawn.new('b', letter + '7', self)
+      @spots[6][col(letter)] = @black_pieces.last
+    end
   end
 
   

@@ -30,16 +30,14 @@ class Rook < Piece
     current_col = @board.col(@current_square)
     for move_col in 0..7
       next if move_col == current_col
-      next if !@board.on_board?(current_row, move_col)
       move_square = @board.to_square(current_row, move_col)
-      next if blocked?(move_square)  || @board.same_player_on_square(move_square, @player)
+      next if !@board.on_board?(move_square) || blocked?(move_square) || @board.same_player_on_square(move_square, @player)
       new_moves << move_square
     end
     for move_row in 0..7
       next if move_row == current_row
-      next if !@board.on_board?(move_row, current_col)
       move_square = @board.to_square(move_row, current_col)
-      next if blocked?(move_square) || @board.same_player_on_square(move_square, @player)
+      next if !@board.on_board?(move_square) || blocked?(move_square) || @board.same_player_on_square(move_square, @player)
       new_moves << move_square
     end
     new_moves

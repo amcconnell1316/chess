@@ -6,10 +6,12 @@ class Piece
     @current_square = square
     @name = name
     @board = board
+    @first_move = true
   end
 
   def move(square)
     @current_square = square
+    @first_move = false
   end
 
   def legal_move?(new_square)
@@ -21,11 +23,7 @@ class Piece
     #have to actually move
     return false if current_row == new_row && current_col == new_col
 
-    #have to stay on the board
-    return false unless @board.on_board?(new_row, new_col)
-
-    #are there any pieces that would block this move
-    !@board.same_player_on_square(new_square, @player)
+    @board.on_board?(new_square) && !@board.same_player_on_square(new_square, @player)
 
   end
   
