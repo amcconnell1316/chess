@@ -4,8 +4,8 @@ require_relative 'piece.rb'
 require_relative 'king.rb'
 # require_relative 'queen.rb'
 require_relative 'rook.rb'
-# require_relative 'knight.rb'
-# require_relative 'bishop.rb'
+require_relative 'knight.rb'
+require_relative 'bishop.rb'
 # require_relative 'pawn.rb'
 
 # This is a class for a chess board
@@ -118,6 +118,8 @@ class Board
         piece = Rook.new(player, square, self)
       when 'bishop'
         piece = Bishop.new(player, square, self)
+      when 'knight'
+        piece = Knight.new(player, square, self)
     end
     pieces_array =  player == 'w' ? @white_pieces : @black_pieces
     pieces_array << piece
@@ -251,21 +253,21 @@ class Board
     @spots[0][0] = @white_pieces.last
     @white_pieces << Rook.new('w', 'h1', self)
     @spots[0][7] = @white_pieces.last
-    # @white_pieces << Knight.new('w', 'b1')
-    # @spots[0][1] = @white_pieces.last
-    # @white_pieces << Knight.new('w', 'g1')
-    # @spots[0][6] = @white_pieces.last
-    # @white_pieces << Bishop.new('w', 'c1')
-    # @spots[0][2] = @white_pieces.last
-    # @white_pieces << Bishop.new('w', 'f1')
-    # @spots[0][5] = @white_pieces.last
-    # @white_pieces << Queen.new('w', 'd1')
+    @white_pieces << Knight.new('w', 'b1', self)
+    @spots[0][1] = @white_pieces.last
+    @white_pieces << Knight.new('w', 'g1', self)
+    @spots[0][6] = @white_pieces.last
+    @white_pieces << Bishop.new('w', 'c1', self)
+    @spots[0][2] = @white_pieces.last
+    @white_pieces << Bishop.new('w', 'f1', self)
+    @spots[0][5] = @white_pieces.last
+    # @white_pieces << Queen.new('w', 'd1', self)
     # @spots[0][3] = @white_pieces.last
     @white_pieces << King.new('w', 'e1', self)
     @spots[0][4] = @white_pieces.last
     @white_king = @white_pieces.last
     # 'abcdefgh'.each do | letter |
-    #   @white_pieces << Pawn.new('w', letter + 2)
+    #   @white_pieces << Pawn.new('w', letter + 2, self)
     #   @spots[0][col(letter)] = @white_pieces.last
     # end
 
@@ -273,21 +275,21 @@ class Board
     @spots[7][0] = @black_pieces.last
     @black_pieces << Rook.new('b', 'h8', self)
     @spots[7][7] = @black_pieces.last
-    # @black_pieces << Knight.new('b', 'b8')
-    # @spots[7][1] = @black_pieces.last
-    # @black_pieces << Knight.new('b', 'g8')
-    # @spots[7][6] = @black_pieces.last
-    # @black_pieces << Bishop.new('b', 'c8')
-    # @spots[7][2] = @black_pieces.last
-    # @black_pieces << Bishop.new('b', 'f8')
-    # @spots[7][5] = @black_pieces.last
-    # @black_pieces << Queen.new('b', 'd8')
+    @black_pieces << Knight.new('b', 'b8', self)
+    @spots[7][1] = @black_pieces.last
+    @black_pieces << Knight.new('b', 'g8', self)
+    @spots[7][6] = @black_pieces.last
+    @black_pieces << Bishop.new('b', 'c8', self)
+    @spots[7][2] = @black_pieces.last
+    @black_pieces << Bishop.new('b', 'f8', self)
+    @spots[7][5] = @black_pieces.last
+    # @black_pieces << Queen.new('b', 'd8', self)
     # @spots[7][3] = @black_pieces.last
     @black_pieces << King.new('b', 'e8', self)
     @spots[7][4] = @black_pieces.last
     @black_king = @black_pieces.last
     # 'abcdefgh'.each do | letter |
-    #   @black_pieces << Pawn.new('b', letter + 8)
+    #   @black_pieces << Pawn.new('b', letter + 8, self)
     #   @spots[7][col(letter)] = @black_pieces.last
     # end
   end
