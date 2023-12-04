@@ -33,10 +33,12 @@ class Knight < Piece
       move_row = current_row + move[0]
       move_col = current_col + move[1]
       square = @board.to_square(move_row, move_col)
-      next unless legal_move?(square)
       new_moves << square
     end
-    new_moves
+
+    new_moves.select do | square |
+      legal_move?(square)
+    end
   end
 
   def king?

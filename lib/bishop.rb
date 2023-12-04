@@ -30,25 +30,24 @@ class Bishop < Piece
     for move in 0..7
       move_row = current_row + move
       move_col = current_col + move
-      move_square = possible_move(move_row, move_col)
-      new_moves << move_square unless move_square.nil?
+      new_moves << @board.to_square(move_row, move_col)
 
       move_row = current_row - move
       move_col = current_col - move
-      move_square = possible_move(move_row, move_col)
-      new_moves << move_square unless move_square.nil?
+      new_moves << @board.to_square(move_row, move_col)
 
       move_row = current_row - move
       move_col = current_col + move
-      move_square = possible_move(move_row, move_col)
-      new_moves << move_square unless move_square.nil?
+      new_moves << @board.to_square(move_row, move_col)
 
       move_row = current_row + move
       move_col = current_col - move
-      move_square = possible_move(move_row, move_col)
-      new_moves << move_square unless move_square.nil?
+      new_moves << @board.to_square(move_row, move_col)
     end
-    new_moves
+    
+    new_moves.select do | square |
+      legal_move?(square)
+    end
   end
 
   def display_chr
@@ -60,11 +59,6 @@ class Bishop < Piece
   end
 
   private  
-  def possible_move(row, col)
-      move_square = @board.to_square(row, col)
-      return nil if !@board.on_board?(move_square) || blocked?(move_square)  || @board.same_player_on_square(move_square, @player)
-      move_square      
-  end
 
   def blocked?(new_square)
     current_row = @board.row(@current_square)

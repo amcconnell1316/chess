@@ -21,16 +21,14 @@ class Pawn < Piece
 
   def possible_moves
     new_moves = []
-    one = forward_one
-    new_moves << one if @board.piece_on_square(one).nil?
-    two = forward_two
-    new_moves << two if @first_move && !blocked?(two) && @board.piece_on_square(two).nil?
+    new_moves << forward_one
+    new_moves << forward_two
     diag = diagonal_one
-    new_moves << diag[0] if @board.other_player_on_square(diag[0], @player)
-    new_moves << diag[1] if @board.other_player_on_square(diag[1], @player)
+    new_moves << diag[0]
+    new_moves << diag[1]
 
     new_moves.select do | square |
-      @board.on_board?(square)
+      legal_move?(square)
     end
   end
 
