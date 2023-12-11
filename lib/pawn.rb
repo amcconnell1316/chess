@@ -11,7 +11,7 @@ class Pawn < Piece
 
     return false unless super
     
-    capture = @board.other_player_on_square(new_square, @player)
+    capture = @board.other_player_on_square(new_square, @player) || @board.en_passant_move?(new_square, @player)
 
     return true if forward_one?(new_square) && !capture
     return true if @first_move && forward_two?(new_square) && !blocked?(new_square) && !capture

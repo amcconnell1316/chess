@@ -70,6 +70,30 @@ describe Pawn do
           expect(result).to be_falsey
         end
       end
+
+      context 'when move captures en passant' do
+        subject(:pawn) { board.add_piece('pawn', 'w', 'c4')}
+        before do
+          board.add_piece('pawn', 'b', 'b6')
+        end
+        it 'returns true' do
+          board.play_move('b6 b4')
+          result = pawn.legal_move?('b5')
+          expect(result).to be_truthy
+        end
+      end
+
+      context 'when en passant is possible the other direction' do
+        subject(:pawn) { board.add_piece('pawn', 'w', 'c4')}
+        before do
+          board.add_piece('pawn', 'b', 'b6')
+        end
+        it 'returns false' do
+          board.play_move('b6 b4')
+          result = pawn.legal_move?('d5')
+          expect(result).to be_falsey
+        end
+      end
     end
 
     context 'when player is black' do
@@ -141,6 +165,37 @@ describe Pawn do
             expect(result).to be_falsey
           end
         end
+
+        context 'when move captures en passant' do
+          subject(:pawn) { board.add_piece('pawn', 'b', 'c6')}
+          before do
+            board.add_piece('pawn', 'w', 'b2')
+            pawn.legal_move?('c4')
+            board.play_move('c6 c4')
+            board.change_player
+            board.play_move('b2 b4')
+            board.change_player
+          end
+          it 'returns true' do
+            result = pawn.legal_move?('b3')
+            expect(result).to be_truthy
+          end
+        end
+
+        context 'when en passant is possible the other direction' do
+          subject(:pawn) { board.add_piece('pawn', 'b', 'c4')}
+          before do
+            board.add_piece('pawn', 'w', 'b2')
+          end
+          it 'returns false' do
+            pawn.legal_move?('c4')
+            board.change_player
+            board.play_move('b2 b4')
+            result = pawn.legal_move?('d3')
+            expect(result).to be_falsey
+          end
+        end
+
       end
   end
 
@@ -213,6 +268,19 @@ describe Pawn do
           expect(result).to contain_exactly('c3', 'e3', 'd3', 'd4')
         end
       end
+
+      context 'when there are moves that can capture en passant' do
+        subject(:pawn_moves) { board_moves.add_piece('pawn', 'w', 'c4')}
+        before do
+          board_moves.add_piece('pawn', 'b', 'b6')
+          board_moves.play_move('b6 b4')
+          board_moves.change_player
+        end
+        it 'returns true' do
+          result = pawn_moves.possible_moves
+          expect(result).to contain_exactly('c5', 'c6', 'b5')
+        end
+      end
     end
 
     context 'when player is black' do
@@ -280,6 +348,21 @@ describe Pawn do
         it 'returns four squares' do
           result = pawn_moves.possible_moves
           expect(result).to contain_exactly('c6', 'e6', 'd6', 'd5')
+        end
+      end
+
+      context 'when there are moves that can capture en passant' do
+        subject(:pawn_moves) { board_moves.add_piece('pawn', 'b', 'c4')}
+        before do
+          board_moves.add_piece('pawn', 'w', 'b2')
+          pawn_moves.legal_move?('c4')
+          board_moves.change_player
+          board_moves.play_move('b2 b4')
+          board_moves.change_player
+        end
+        it 'returns true' do
+          result = pawn_moves.possible_moves
+          expect(result).to contain_exactly('c3', 'c2', 'b3')
         end
       end
     end

@@ -139,6 +139,18 @@ class Board
     piece
   end
 
+  def en_passant_move?(square, player)
+    if player == 'w'
+      ep_row = row(square) - 1
+    else
+      ep_row = row(square) + 1
+    end
+
+    ep_square = to_square(ep_row, col(square))
+    piece = piece_on_square(ep_square) if on_board?(ep_square)
+    !piece.nil? && piece == (player == 'w' ? @en_passant_b : @en_passant_w)
+  end
+
   private
 
   # methods for validating moves
@@ -250,7 +262,23 @@ class Board
   end
 
   def move_piece(old_square, new_square)
-    piece = @spots[row(old_square)][col(old_square)] 
+    piece = piece_on_square(old_square)
+
+    #en passant
+    if piece.is_a?(Pawn)
+      if @current_player == 'w'
+        @en_passant_w = piece if (row(old_square) - row(new_square)).abs == 2
+      else
+        @en_passant_b = piece if (row(old_square) - row(new_square)).abs == 2
+      end
+    else
+      if @current_player == 'w'
+        @en_passant_w = nil
+      else
+        @en_passant_b = nil
+      end
+    end
+
     @spots[row(old_square)][col(old_square)] = nil
     @spots[row(new_square)][col(new_square)] = piece
     piece.move(new_square)
