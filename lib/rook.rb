@@ -5,7 +5,6 @@ class Rook < Piece
 
   def initialize(player, square, board)
     super(player, square, board, 'rook')
-    #@MOVES = [[0, -1], [0, -1], [0, -1], [0, -3], [0, -4], [0, -5], [-1, 0], [-1, 1]]
   end
 
   def legal_move?(new_square)
@@ -51,8 +50,6 @@ class Rook < Piece
   def king?
     false
   end
-
-  private  
 
   def blocked?(new_square)
     current_row = @board.row(@current_square)

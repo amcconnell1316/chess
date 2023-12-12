@@ -38,6 +38,7 @@ class Board
       remove_piece(move_arr[1])
     end
     #move piece to new square
+    handle_castling(move_arr[0], move_arr[1])
     move_piece(move_arr[0], move_arr[1])
   end
 
@@ -149,6 +150,22 @@ class Board
     ep_square = to_square(ep_row, col(square))
     piece = piece_on_square(ep_square) if on_board?(ep_square)
     !piece.nil? && piece == (player == 'w' ? @en_passant_b : @en_passant_w)
+  end
+
+  def castling_legal?(player, new_square)
+    king = player == 'w' ? @white_king : @black_king
+    rook = castling_rook(king, player, new_square)
+    return false if rook.nil?
+    return false unless rook.first_move && king.first_move
+
+    #no pieces between king and rook
+    return false if rook.blocked?(king.current_square)
+
+    #king cannot be in check and the square it moves through cannot be attacked
+    checking_player = player == 'w' ? 'b' : 'w'
+    new_rook_square = castling_rook_new_square(king, new_square)
+    return false if check?(checking_player)
+    !possible_move_check?(checking_player, king, new_rook_square)
   end
 
   private
@@ -282,6 +299,42 @@ class Board
     @spots[row(old_square)][col(old_square)] = nil
     @spots[row(new_square)][col(new_square)] = piece
     piece.move(new_square)
+  end
+
+  def handle_castling(old_square, new_square)
+    return unless castling?(old_square, new_square)
+
+    king = @current_player == 'w' ? @white_king : @black_king
+    rook = castling_rook(king, @current_player, new_square)
+    new_rook_square = castling_rook_new_square(king, new_square)
+    move_piece(rook.current_square, new_rook_square)
+  end
+
+  def castling?(old_square, new_square)
+    piece = piece_on_square(old_square)
+    return false if piece.nil? || !piece.king?
+    current_col = col(old_square)
+    new_col = col(new_square)
+    (current_col - new_col).abs == 2
+  end
+
+  def castling_rook(king, player, new_king_square)
+    current_col = col(king.current_square)
+    new_col = col(new_king_square)
+    direction = current_col > new_col ? 'left' : 'right'
+    rook_col = direction == 'left' ? 0 : 7
+    rook_row = player == 'w' ? 0 : 7
+    rook = piece_on_square(to_square(rook_row, rook_col))
+    return nil if rook.nil?
+    rook.name == 'rook' ? rook : nil
+  end
+
+  def castling_rook_new_square(king, new_square)
+    current_col = col(king.current_square)
+    new_king_col = col(new_square)
+    row = row(new_square)
+    new_rook_col = current_col > new_king_col ? current_col - 1 : current_col + 1
+    new_rook_square = to_square(row, new_rook_col)
   end
 
   def display_spot(piece)

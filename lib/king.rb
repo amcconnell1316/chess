@@ -16,11 +16,14 @@ class King < Piece
     return false unless super
 
     #is the move legal
-    @MOVES.any? do | move |
+    regular_move = @MOVES.any? do | move |
       move_row = current_row + move[0]
       move_col = current_col + move[1]
       move_row == new_row && move_col == new_col
     end
+
+    castling = (current_col - new_col).abs == 2 && @board.castling_legal?(@player, new_square)
+    regular_move || castling
   end
 
   def possible_moves
@@ -34,6 +37,9 @@ class King < Piece
       square = @board.to_square(move_row, move_col)
       new_moves << square
     end
+
+    new_moves << @board.to_square(current_row, current_col + 2)
+    new_moves << @board.to_square(current_row, current_col -2)
 
     new_moves.select do | square |
       legal_move?(square)

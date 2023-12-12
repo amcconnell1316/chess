@@ -5,29 +5,67 @@ describe Board do
   #public
   describe 'play_move' do
     subject(:board_play) { Board.new(true)}
-    before do
-      board_play.add_piece('king', 'b', 'e8')
-      board_play.add_piece('king', 'w', 'e1')
-      board_play.add_piece('rook', 'w', 'a1')
-      board_play.add_piece('rook', 'b', 'a8')
-      board_play.change_player
-    end
 
     context 'when a piece is captured' do
+      before do
+        board_play.add_piece('king', 'b', 'e8')
+        board_play.add_piece('king', 'w', 'e1')
+        board_play.add_piece('rook', 'w', 'a1')
+        board_play.add_piece('rook', 'b', 'a8')
+        board_play.change_player
+      end
       it 'is removed from white or black pieces array' do
         expect {board_play.play_move('a1 a8')}.to change { board_play.instance_variable_get(:@black_pieces) }
       end
     end
 
     context 'when a piece is not captured' do
+      before do
+        board_play.add_piece('king', 'b', 'e8')
+        board_play.add_piece('king', 'w', 'e1')
+        board_play.add_piece('rook', 'w', 'a1')
+        board_play.add_piece('rook', 'b', 'a8')
+        board_play.change_player
+      end
       it 'the white or black pieces array is not changed' do
         expect {board_play.play_move('a1 a7')}.to_not change { board_play.instance_variable_get(:@black_pieces) }
       end
     end
 
     context 'when a piece is moved' do
+      let(:white_rook) { board_play.add_piece('rook', 'w', 'a1') }
+      before do
+        white_rook.name
+        board_play.add_piece('king', 'b', 'e8')
+        board_play.add_piece('king', 'w', 'e1')
+        board_play.add_piece('rook', 'b', 'a8')
+        board_play.change_player
+      end
       it 'changes @spots' do
         expect {board_play.play_move('a1 a2')}.to change { board_play.instance_variable_get(:@spots) }
+      end
+
+      it 'updates current square for the piece' do
+        expect {board_play.play_move('a1 a2')}.to change { white_rook.current_square }.from('a1').to('a2')
+      end
+    end
+
+    context 'when castling white left rook' do
+      let(:white_rook) { board_play.add_piece('rook', 'w', 'a1') }
+      let(:white_king) { board_play.add_piece('king', 'w', 'e1') }
+      before do
+        white_rook.name
+        white_king.name
+        board_play.add_piece('king', 'b', 'e8')
+        board_play.add_piece('rook', 'b', 'a8')
+        board_play.change_player
+      end
+
+      it 'updates current square for the king' do
+        expect {board_play.play_move('e1 c1')}.to change { white_king.current_square }.from('e1').to('c1')
+      end
+      it 'updates current square for the rook' do
+        expect {board_play.play_move('e1 c1')}.to change { white_rook.current_square }.from('a1').to('d1')
       end
     end
   end

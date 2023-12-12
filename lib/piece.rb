@@ -1,5 +1,5 @@
 class Piece 
-  attr_reader :player, :name, :current_square
+  attr_reader :player, :name, :current_square, :first_move
 
   def initialize(player, square, board, name = 'piece')
     @player = player

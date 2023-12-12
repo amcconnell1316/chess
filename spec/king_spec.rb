@@ -23,6 +23,107 @@ describe King do
         expect(result).to be_falsey
       end
     end
+
+    context 'when move is legal, castling' do
+      let(:board) { Board.new(true)}
+      subject(:king) { board.add_piece('king', 'w', 'e1')}
+
+      before do
+        king.name
+        board.add_piece('rook', 'w', 'h1')
+        board.change_player
+      end
+
+      it 'returns true' do
+        result = subject.legal_move?('g1')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when move is not legal, castling, rook has moved' do
+      let(:board) { Board.new(true)}
+      subject(:king) { board.add_piece('king', 'w', 'e1')}
+
+      before do
+        king.name
+        board.add_piece('rook', 'w', 'h2')
+        board.change_player
+        board.play_move('h2 h1')
+      end
+
+      it 'returns false' do
+        result = subject.legal_move?('g1')
+        expect(result).to be_falsey
+      end
+    end
+
+    context 'when move is not legal, castling, king has moved' do
+      let(:board) { Board.new(true)}
+      subject(:king) { board.add_piece('king', 'w', 'd1')}
+
+      before do
+        king.name
+        board.add_piece('rook', 'w', 'h1')
+        board.change_player
+        board.play_move('d1 e1')
+      end
+
+      it 'returns false' do
+        result = subject.legal_move?('g1')
+        expect(result).to be_falsey
+      end
+    end
+
+    context 'when move is not legal, castling, piece blocking' do
+      let(:board) { Board.new(true)}
+      subject(:king) { board.add_piece('king', 'w', 'e1')}
+
+      before do
+        king.name
+        board.add_piece('rook', 'w', 'h1')
+        board.add_piece('bishop', 'w', 'f1')
+        board.change_player
+      end
+
+      it 'returns false' do
+        result = subject.legal_move?('g1')
+        expect(result).to be_falsey
+      end
+    end
+
+    context 'when move is not legal, castling, king was in check' do
+      let(:board) { Board.new(true)}
+      subject(:king) { board.add_piece('king', 'w', 'e1')}
+
+      before do
+        king.name
+        board.add_piece('rook', 'w', 'h1')
+        board.add_piece('bishop', 'b', 'c3')
+        board.change_player
+      end
+
+      it 'returns false' do
+        result = subject.legal_move?('g1')
+        expect(result).to be_falsey
+      end
+    end
+
+    context 'when move is not legal, castling, passed over square was under attck' do
+      let(:board) { Board.new(true)}
+      subject(:king) { board.add_piece('king', 'w', 'e1')}
+
+      before do
+        king.name
+        board.add_piece('rook', 'w', 'h1')
+        board.add_piece('bishop', 'b', 'd3')
+        board.change_player
+      end
+
+      it 'returns false' do
+        result = subject.legal_move?('g1')
+        expect(result).to be_falsey
+      end
+    end
   end
 
   describe 'possible moves' do
@@ -77,6 +178,18 @@ describe King do
       it 'returns an empty array' do
         result = king_moves.possible_moves
         expect(result).to contain_exactly('b1', 'b2')
+      end
+    end
+
+    context 'when castling is available' do
+      subject(:king_moves) { board_moves.add_piece('king', 'b', 'e8')}
+      before do
+        board_moves.add_piece('rook', 'b', 'h8')
+        board_moves.add_piece('rook', 'b', 'a8')
+      end
+      it 'returns seven squares' do
+        result = king_moves.possible_moves
+        expect(result).to contain_exactly('c8', 'g8', 'd8', 'f8', 'd7', 'e7', 'f7')
       end
     end
 
