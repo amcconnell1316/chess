@@ -284,8 +284,10 @@ class Board
     #en passant
     if piece.is_a?(Pawn)
       if @current_player == 'w'
+        promotion = row(new_square) == 7
         @en_passant_w = piece if (row(old_square) - row(new_square)).abs == 2
       else
+        promotion = row(new_square) == 0
         @en_passant_b = piece if (row(old_square) - row(new_square)).abs == 2
       end
     else
@@ -297,8 +299,13 @@ class Board
     end
 
     @spots[row(old_square)][col(old_square)] = nil
-    @spots[row(new_square)][col(new_square)] = piece
-    piece.move(new_square)
+
+    if promotion 
+      add_piece('queen', @current_player, new_square)
+    else
+      @spots[row(new_square)][col(new_square)] = piece
+      piece.move(new_square)
+    end
   end
 
   def handle_castling(old_square, new_square)

@@ -68,6 +68,20 @@ describe Board do
         expect {board_play.play_move('e1 c1')}.to change { white_rook.current_square }.from('a1').to('d1')
       end
     end
+
+    context 'when promoting a pawn' do
+      before do
+        board_play.add_piece('king', 'b', 'e8')
+        board_play.add_piece('king', 'w', 'e1')
+        board_play.add_piece('pawn', 'w', 'a7')
+        board_play.change_player
+      end
+      it 'changes the piece on the new square to be a queen' do
+        board_play.play_move('a7 a8')
+        new_piece = board_play.piece_on_square('a8')
+        expect(new_piece).to be_a Queen
+      end
+    end
   end
 
   #public
