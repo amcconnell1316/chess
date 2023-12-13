@@ -31,11 +31,12 @@ class Board
     move_arr = move.split(' ')
 
     #check opponent piece in new square
-    piece_to_capture = piece_on_square(move_arr[1])
+    square_to_capture = en_passant_move?(move_arr[1], @current_player) ? en_passant_square(move_arr[1], @current_player) : move_arr[1]
+    piece_to_capture = piece_on_square(square_to_capture)
     #capture opponent piece
     if !piece_to_capture.nil?
       puts "#{piece_to_capture.name} has been captured"
-      remove_piece(move_arr[1])
+      remove_piece(square_to_capture)
     end
     #move piece to new square
     handle_castling(move_arr[0], move_arr[1])
@@ -169,15 +170,19 @@ class Board
   end
 
   def en_passant_move?(square, player)
+    ep_square = en_passant_square(square, player)
+    piece = piece_on_square(ep_square) if on_board?(ep_square)
+    !piece.nil? && piece == (player == 'w' ? @en_passant_b : @en_passant_w)
+  end
+
+  def en_passant_square(square, player)
     if player == 'w'
       ep_row = row(square) - 1
     else
       ep_row = row(square) + 1
     end
 
-    ep_square = to_square(ep_row, col(square))
-    piece = piece_on_square(ep_square) if on_board?(ep_square)
-    !piece.nil? && piece == (player == 'w' ? @en_passant_b : @en_passant_w)
+    to_square(ep_row, col(square))
   end
 
   def castling_legal?(player, new_square)

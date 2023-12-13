@@ -19,6 +19,31 @@ describe Board do
       end
     end
 
+    context 'when a white piece is captured en passant' do
+      before do
+        board_play.add_piece('pawn', 'b', 'c4')
+        board_play.add_piece('pawn', 'w', 'b2')
+        board_play.change_player
+        board_play.play_move('b2 b4')
+        board_play.change_player
+      end
+      it 'is removed from white pieces array' do
+        expect {board_play.play_move('c4 b3')}.to change { board_play.instance_variable_get(:@white_pieces) }
+      end
+    end
+
+    context 'when a black piece is captured en passant' do
+      before do
+        board_play.add_piece('pawn', 'w', 'c5')
+        board_play.add_piece('pawn', 'b', 'b7')
+        board_play.play_move('b7 b5')
+        board_play.change_player
+      end
+      it 'is removed from black pieces array' do
+        expect {board_play.play_move('c5 b6')}.to change { board_play.instance_variable_get(:@black_pieces) }
+      end
+    end
+
     context 'when a piece is not captured' do
       before do
         board_play.add_piece('king', 'b', 'e8')
