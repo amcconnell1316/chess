@@ -120,6 +120,7 @@ class Board
   end
 
   def on_board?(square)
+    return false if square.length > 2
     row = row(square)
     col = col(square)
     row >= 0 && row < 8  && col >= 0 && col < 8
