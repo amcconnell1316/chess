@@ -77,6 +77,34 @@ class Board
     winner? || draw?
   end
 
+  def to_json
+    JSON.dump ({
+      :current_player => @current_player,
+      :en_passant_w => @en_passant_w,
+      :en_passant_b => @en_passant_b,
+      :black_pieces => @black_pieces,
+      :white_pieces => @white_pieces
+    })
+  end
+
+  def self.from_json(string)
+    data = JSON.load string
+    saved_board = self.new(true)
+    other_player = data['current_player'] == 'w' ? 'b' : 'w' #player will get changed on first turn
+    saved_board.instance_variable_set(:@current_player, other_player)
+    saved_board.instance_variable_set(:@en_passant_b, data['en_passant_b'])
+    saved_board.instance_variable_set(:@en_passant_w, data['en_passant_w'])
+    data['black_pieces'].each do | piece_data |
+      piece = saved_board.add_piece(piece_data['name'], piece_data['player'], piece_data['current_square'])
+      piece.instance_variable_set(:@first_move, piece_data['first_move']) 
+    end
+    data['white_pieces'].each do | piece_data |
+      piece = saved_board.add_piece(piece_data['name'], piece_data['player'], piece_data['current_square'])
+      piece.instance_variable_set(:@first_move, piece_data['first_move']) 
+    end
+    saved_board
+  end
+
   #public methods called by the pieces
   def row(square)
     square[1].to_i - 1
@@ -393,11 +421,4 @@ class Board
       @spots[6][col(letter)] = @black_pieces.last
     end
   end
-
-  
-
-  #todo en passant
-  #todo promotion
-  #todo castling
-
 end

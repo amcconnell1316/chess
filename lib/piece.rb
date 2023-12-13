@@ -24,7 +24,15 @@ class Piece
     return false if current_row == new_row && current_col == new_col
 
     @board.on_board?(new_square) && !@board.same_player_on_square(new_square, @player)
+  end
 
+  def to_json(options = {})
+    JSON.dump ({
+      :player => @player,
+      :name => @name,
+      :current_square => @current_square,
+      :first_move => @first_move
+    })
   end
   
 end
